@@ -19,10 +19,15 @@ function FixString ($in = '', [bool]$includeBreaks = $false){
 function Update-Progress($name, $action){
     Write-Progress -Activity "Rendering $action for $name" -CurrentOperation "Completed $progress of $totalCommands." -PercentComplete $(($progress/$totalCommands)*100)
 }
-$i = 0
+
+Write-Progress -Activity "Analysing module $modulename" -Status "Getting help details"
 $commandsHelp = (Get-Command -module $moduleName) | get-help -full | Where-Object {! $_.name.EndsWith('.ps1')}
+Write-Progress -Activity "Analysing module $modulename" -Status "Getting help details" -Completed
 
 foreach ($h in $commandsHelp){
+
+    Write-Progress -Activity "Analysing module $modulename" -Status "Analysing help detail for cmdlet $($h.Name)"
+
     $cmdHelp = (Get-Command $h.Name)
 
     # Get any aliases associated with the method
@@ -48,6 +53,8 @@ foreach ($h in $commandsHelp){
         }
     }
 }
+Write-Progress -Activity "Analysing module $modulename" -Completed
+
 
 # Create the output directory if it does not exist
 if (-Not (Test-Path $outputDir)) {
